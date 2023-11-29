@@ -7,13 +7,14 @@ public class Placar : MonoBehaviour
 {
     public int score = 0;
     public Text scoreText;
+    private List<GameObject> pinosCaidos = new List<GameObject>();
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Pinos")) // Make sure each pin has the tag "Pin"
+        if (other.CompareTag("Pinos") && !pinosCaidos.Contains(other.gameObject))
         {
+            pinosCaidos.Add(other.gameObject);
             score++;
-            // You can also deactivate the pin here if needed
         }
     }
 
@@ -22,7 +23,6 @@ public class Placar : MonoBehaviour
     }
 
     private void Update() {
-        Debug.Log(score);
         scoreText.text = score.ToString();
     }
 }
