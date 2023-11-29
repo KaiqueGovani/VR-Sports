@@ -12,6 +12,14 @@ public class Bola : MonoBehaviour
     {
         startPostion = transform.position;
         startRotation = transform.rotation;
+        GameObject[] bolas = GameObject.FindGameObjectsWithTag("Bola");
+        foreach (GameObject bola in bolas)
+        {
+            if (bola != this.gameObject)
+            {
+                Physics.IgnoreCollision(bola.GetComponent<Collider>(), GetComponent<Collider>());
+            }
+        }
     }
 
     public void ResetBall(){
