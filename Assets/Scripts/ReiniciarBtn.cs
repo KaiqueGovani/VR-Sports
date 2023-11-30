@@ -6,7 +6,12 @@ using UnityEngine.SceneManagement;
 
 public class ReiniciarBtn : MonoBehaviour
 {
+    public string sceneName;
+    public GameObject objetoDesativar;
     public void ReiniciarCena(){
-        SceneManager.LoadScene("BolicheVR");
+        SceneManager.LoadScene(sceneName);
+    }
+    public void InativarObjeto(){
+        objetoDesativar.SetActive(false);
     }
 }
