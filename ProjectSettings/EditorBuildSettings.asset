@@ -21,7 +21,7 @@ EditorBuildSettings:
     path: Assets/Corrida/Corrida.unity
     guid: 228e72d08b23a704ebb3257b9986c38d
   - enabled: 1
-    path: Assets/Archery.unity
+    path: Assets/ArcoEFlecha/Archery.unity
     guid: cb5925a9d268053409fd227d085d9745
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: bfa1182bd221b4ca89619141f66f1260, type: 2}

@@ -22,6 +22,7 @@ public class BolicheManager : MonoBehaviour
     public int currentRoll = 0;
     public int totalScore = 0;
     public GameObject fimDeJogo;
+    public SonsBoliche sonsBoliche;
 
     // Define a class to store position and rotation
     public class TransformData
@@ -45,6 +46,7 @@ public class BolicheManager : MonoBehaviour
         public bool strike;
         public bool spare;
         public bool isComplete;
+        public bool isHalfComplete = false;
 
         public Frame(int roll1, int roll2, int score, bool strike, bool spare, bool isComplete)
         {
@@ -82,10 +84,12 @@ public class BolicheManager : MonoBehaviour
             frames[currentFrame].roll1 = pinosCaidos.Count;
             if(frames[currentFrame].roll1 == 10){
                 frames[currentFrame].strike = true;
+                sonsBoliche.FelizSom();
                 frames[currentFrame].isComplete = true;
                 FinishFrame();
             }
             else{
+                frames[currentFrame].isHalfComplete = true;
                 FinishRoll();
             }
         }
@@ -103,6 +107,7 @@ public class BolicheManager : MonoBehaviour
 
     void FinishGame(){
         Debug.Log("Fim de Jogo!");
+        sonsBoliche.FelizSom();
         campoTotal.GetNamedChild("Total").GetComponent<Text>().text = totalScore.ToString();
         fimDeJogo.SetActive(true);
     }
@@ -152,27 +157,20 @@ public class BolicheManager : MonoBehaviour
         int i = 0;
         foreach(GameObject campoPlacar in camposPlacar){
             campoPlacar.GetNamedChild("Titulo").GetComponent<Text>().text = (i+1).ToString();
-            campoPlacar.GetNamedChild("Valor1").GetComponent<Text>().text = FormatScore(frames[i].roll1.ToString() == "10" ? "X" : frames[i].roll1.ToString());
-            campoPlacar.GetNamedChild("Valor2").GetComponent<Text>().text = FormatScore(frames[i].spare ? "/" : frames[i].roll2.ToString());
-            campoPlacar.GetNamedChild("Total").GetComponent<Text>().text = FormatScore(frames[i].score.ToString());
+            campoPlacar.GetNamedChild("Valor1").GetComponent<Text>().text = frames[i].strike ? "X" : (frames[i].isHalfComplete ? frames[i].roll1.ToString() : "");
+            campoPlacar.GetNamedChild("Valor2").GetComponent<Text>().text = frames[i].spare ? "/" : (frames[i].isComplete ? frames[i].roll2.ToString() : "");
+            campoPlacar.GetNamedChild("Total").GetComponent<Text>().text = frames[i].isComplete ? frames[i].score.ToString() : "";
             i++;
         }
     }
 
-    String FormatScore(string score){
-        if (score == "0"){
-            return "";
-        }
-        else {
-            return score;
-        }
-    }
 
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Pinos") && !pinosCaidos.Contains(other.gameObject))
         {
             hitPins = true;
+            sonsBoliche.PinoSom();
             hitTime = Time.time;
             pinosCaidos.Add(other.gameObject);
         }
@@ -199,5 +197,8 @@ public class BolicheManager : MonoBehaviour
     public void Missed(){
         hitPins = true;
         hitTime = Time.time;
+        if (pinosCaidos.Count == 0){
+            sonsBoliche.TristeSom();
+        }
     }
 }

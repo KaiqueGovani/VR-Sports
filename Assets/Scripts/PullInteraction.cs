@@ -5,6 +5,7 @@ using UnityEngine.XR.Interaction.Toolkit;
 public class PullInteraction : XRBaseInteractable
 {
     public static event Action<float> PullActionReleased;
+    public SonsArchery sonsArchery;
 
     public Transform start, end;
     public GameObject notch;
@@ -24,17 +25,20 @@ public class PullInteraction : XRBaseInteractable
     }
     public void SetPullInteractor(SelectEnterEventArgs args)
     {
+        //Debug.Log("SetPullInteractor");
         pullingInteractor = args.interactorObject;
+        sonsArchery.PuxarFlechaSom();
     }
     public void Release()
     {
+        //Debug.Log("Release");
         PullActionReleased?.Invoke(pullAmount);
         pullingInteractor = null;
         pullAmount = 0f;
         notch.transform.localPosition = new Vector3(notch.transform.localPosition.x, notch.transform.localPosition.y, 0f);
         UpdateString();
 
-        PlayRealeaseSound();
+        sonsArchery.SoltarFlechaSom();
     }
     public override void ProcessInteractable(XRInteractionUpdateOrder.UpdatePhase updatePhase)
     {
@@ -43,11 +47,11 @@ public class PullInteraction : XRBaseInteractable
         {
             if (isSelected)
             {
+                //Debug.Log("isSelected");
                 Vector3 pullPosition = pullingInteractor.transform.position;
                 pullAmount = CalculatePull(pullPosition);
 
                 UpdateString();
-                HapticFeedback();
             }
         }
     }
@@ -65,23 +69,10 @@ public class PullInteraction : XRBaseInteractable
 
     private void UpdateString()
     {
-        Vector3 linePosition = Vector3.forward * Mathf.Lerp(start.transform.localPosition.z, end.transform.localPosition.z, pullAmount);
-        notch.transform.localPosition = new Vector3(notch.transform.localPosition.x, notch.transform.localPosition.y, linePosition.z +.2f);
+        //Debug.Log(pullAmount);
+        Vector3 linePosition = Vector3.forward * Mathf.Lerp(-0.2f, 0, pullAmount);
+        notch.transform.localPosition = new Vector3(notch.transform.localPosition.x, notch.transform.localPosition.y, -linePosition.z - 0.17f);
         _lineRenderer.SetPosition(1, linePosition);
     }
 
-    private void HapticFeedback()
-    {
-        if(pullingInteractor != null)
-        {
-            ActionBasedController currentController = pullingInteractor.transform.gameObject.GetComponent<ActionBasedController>();
-            Debug.Log(pullingInteractor.transform.gameObject.GetComponent<ActionBasedController>());
-            currentController.SendHapticImpulse(pullAmount, .1f);
-        }
-    }
-
-    private void PlayRealeaseSound()
-    {
-        _audioSource.Play();
-    }
 }

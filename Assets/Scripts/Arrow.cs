@@ -9,6 +9,7 @@ public class Arrow : MonoBehaviour
     private Rigidbody _rigidBody;
     private bool _inAir = false;
     private Vector3 _lastPosition = Vector3.zero;
+    public bool hasHit = false;
 
     private void Awake()
     {
@@ -30,7 +31,7 @@ public class Arrow : MonoBehaviour
         _inAir = true;
         SetPhysics(true);
 
-        Vector3 force = transform.forward * value * speed;
+        Vector3 force = speed * value * transform.forward;
         _rigidBody.AddForce(force, ForceMode.Impulse);
 
         StartCoroutine(RotateWithVelocity());
@@ -51,13 +52,16 @@ public class Arrow : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.transform.TryGetComponent(out Rigidbody body))
+        if (collision.transform.TryGetComponent(out Rigidbody body) && !collision.gameObject.CompareTag("Flecha") && !collision.gameObject.CompareTag("Player"))
         {
             _rigidBody.interpolation = RigidbodyInterpolation.None;
             transform.parent = collision.transform;
             body.AddForce(_rigidBody.velocity, ForceMode.Impulse);
         }
-        Stop();
+        if (!collision.gameObject.CompareTag("Player") && !collision.gameObject.CompareTag("Flecha"))
+        {
+            Stop();
+        }
     }
 
     private void Stop()
